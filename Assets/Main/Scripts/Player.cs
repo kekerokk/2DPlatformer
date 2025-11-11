@@ -26,12 +26,13 @@ public class Player : MonoBehaviour {
     [SerializeField] float _hitForce = 4f;
     [SerializeField] float _hitDuration = 0.5f;
     [SerializeField] LayerMask _excludeDangerous;
-    
 
     [Header("Input")] // todo interface for input, class for InputSystem
     [SerializeField] Vector2 _moveDirection;
     InputActions _input;
     InputActions.PlayerActions _playerActions;
+
+    public event Action OnDied = delegate { };
     
     static readonly int _moving = Animator.StringToHash("Moving");
     static readonly int _jumping = Animator.StringToHash("Jumping");
@@ -46,6 +47,7 @@ public class Player : MonoBehaviour {
         _playerActions.Attack.performed += Attack; 
         _playerActions.Enable();
         _health.Reset();
+        _health.OnZeroHealth += Die;
     }
     void Attack(InputAction.CallbackContext obj) {
         _sword.Attack();
@@ -66,7 +68,7 @@ public class Player : MonoBehaviour {
     }
     IEnumerator HitProcess(Vector2 direction) {
         _controller.Disable();
-        _animator.SetBool(_hitted, true);
+        // _animator.SetBool(_hitted, true);
         _animator.Play(_hitAnim);
         _rb.AddForce((direction + Vector2.up) * _hitForce, ForceMode2D.Impulse);
         _rb.excludeLayers = _excludeDangerous;
@@ -74,8 +76,16 @@ public class Player : MonoBehaviour {
         yield return new WaitForSeconds(_hitDuration);
 
         _rb.excludeLayers = default;
-        _animator.SetBool(_hitted, false);
+        // _animator.SetBool(_hitted, false);
         _controller.Enable();
+    }
+    void Die() {
+        OnDied.Invoke();
+    }
+
+    public void Restore() {
+        _health.Reset();
+        _controller.Reset();
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -90,8 +100,8 @@ public class Player : MonoBehaviour {
     }
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.CompareTag("Trap")) {
-            health.Decrease();
-            StartCoroutine(HitProcess((_playerBody.position.WithY(0) - other.transform.position.WithY(0)).normalized));
+            if (_health.current - 1 > 0) StartCoroutine(HitProcess((_playerBody.position.WithY(0) - other.transform.position.WithY(0)).normalized));
+            _health.Decrease();
         }
     }
     void OnDestroy() {

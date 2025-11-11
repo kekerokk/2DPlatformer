@@ -199,7 +199,7 @@ MonoBehaviour:
         _groundDeceleration: 60
         _airDeceleration: 40
         _maxFallSpeed: 15
-        _inAirGravity: 15
+        _inAirGravity: 20
         _groundMask:
           serializedVersion: 2
           m_Bits: 64

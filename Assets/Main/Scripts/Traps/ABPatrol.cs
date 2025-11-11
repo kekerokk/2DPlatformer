@@ -11,6 +11,7 @@ public class ABPatrol : MonoBehaviour {
     void Awake() {
         _patroller.Value.OnDestroyEvt += Destroy;
         _targetPos = BPoint.position;
+        _patroller.Value.SetTarget(_targetPos);
         _isAPoint = false;
     }
     void Destroy() {
@@ -18,7 +19,7 @@ public class ABPatrol : MonoBehaviour {
     }
 
     void Update() {
-        if (Vector3.Distance(_patroller.Value.position, _targetPos) < 0.1f) {
+        if (Vector3.Distance(_patroller.Value.position.WithY(0), _targetPos.WithY(0)) < 0.1f) {
             _targetPos = _isAPoint ? BPoint.position : APoint.position;
             _isAPoint = !_isAPoint;
             _patroller.Value.SetTarget(_targetPos);

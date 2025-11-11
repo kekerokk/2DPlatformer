@@ -25,6 +25,7 @@ public class Controller : IController {
     [SerializeField] bool _sideHitted, _ceilHitted;
     [SerializeField] Vector2 _frameVelocity;
     [SerializeField] Vector2 _move;
+    bool _resetRequires;
     
     public bool isMoving { get; private set; }
     public bool isJumping { get; private set; }
@@ -39,6 +40,11 @@ public class Controller : IController {
         _move = input.move;
     }
     public void Update() {
+        if (_resetRequires) {
+            _frameVelocity = Vector2.zero;
+            _resetRequires = false;
+        }
+        
         GroundCheck();
         
         if(!_active) return;
@@ -123,5 +129,9 @@ public class Controller : IController {
         _rb.linearVelocityX = 0;
         _rb.linearVelocityY = 0;
         _active = false;
+    }
+    public void Reset() {
+        _active = true;
+        _resetRequires = true;
     }
 }
