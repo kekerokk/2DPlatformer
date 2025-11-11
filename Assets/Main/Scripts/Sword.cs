@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using PrimeTween;
 using UnityEngine;
 
@@ -11,7 +12,12 @@ public class Sword : MonoBehaviour {
     [SerializeField] float _attackDuration;
 
     bool _attacking;
-    
+
+    void Awake() {
+        _collider.enabled = false;
+        _sprite.color = _sprite.color.WithA(0);
+    }
+
     public void Attack() {
         if(_attacking) return;
         _attacking = true;

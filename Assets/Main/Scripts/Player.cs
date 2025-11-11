@@ -1,40 +1,46 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public readonly ref struct MoveInputData {
+    public readonly Vector2 move;
+    public readonly bool jumpForced;
+    public MoveInputData(Vector2 move, bool jumpForced) {
+        this.move = move;
+        this.jumpForced = jumpForced;
+    }
+}
+
 public class Player : MonoBehaviour {
     [SerializeField] Rigidbody2D _rb;
+    [SerializeField] CapsuleCollider2D _col;
     [SerializeField] Transform _playerBody;
     [SerializeField] Animator _animator;
     [SerializeField] Health _health;
-    [SerializeField] Sword _sword; 
+    [SerializeField] Sword _sword;
+    [SerializeReference, SubclassSelector] IController _controller;
+
     public Health health => _health;
     
-    [Header("Movement")]
-    [SerializeField] float _speed = 4f;
-    [SerializeField] float _jumpHeight = 3;
-    [SerializeField] float _toGroundDistance = 1f;
-    [SerializeField] bool _isOnGround = true;
-    [SerializeField] bool _airJumped;
+    [SerializeField] float _hitForce = 4f;
     [SerializeField] float _hitDuration = 0.5f;
-    int _groundMask;
+    [SerializeField] LayerMask _excludeDangerous;
+    
 
     [Header("Input")] // todo interface for input, class for InputSystem
     [SerializeField] Vector2 _moveDirection;
     InputActions _input;
     InputActions.PlayerActions _playerActions;
-    bool _inputEnabled = true;
-    
-    RaycastHit2D[] _hit = new RaycastHit2D[1];
     
     static readonly int _moving = Animator.StringToHash("Moving");
     static readonly int _jumping = Animator.StringToHash("Jumping");
     static readonly int _doubleJumping = Animator.StringToHash("DoubleJumping");
     static readonly int _falling = Animator.StringToHash("Falling");
     static readonly int _hitted = Animator.StringToHash("Hitted");
+    static readonly string _hitAnim = "Base Layer.Hit";
 
     void Awake() {
-        _groundMask = LayerMask.GetMask(new[] { "Ground" });
         _input = new();
         _playerActions = _input.Player;
         _playerActions.Attack.performed += Attack; 
@@ -45,72 +51,42 @@ public class Player : MonoBehaviour {
         _sword.Attack();
     }
     void Update() {
-        GroundCheck();
-        
-        if(_inputEnabled == false) return;
-        ForceJump();
-        Movement();
-        Rotation();
+        MoveInputData input = new(_playerActions.Movement.ReadValue<Vector2>(), _playerActions.Jump.WasPerformedThisFrame());
+        _controller.UpdateInput(ref input);
     }
-    
-    void Movement() {
-        _moveDirection = _playerActions.Movement.ReadValue<Vector2>();
-        _rb.linearVelocityX = _moveDirection.x * _speed;
-        _animator.SetBool(_moving, _moveDirection.x != 0);
+    void FixedUpdate() {
+        _controller.Update();
+        UpdateAnimator();
     }
-    IEnumerator JumpBuffer() {
-        yield break;
-    }
-    void Rotation() {
-        if (_moveDirection.x != 0) {
-            _playerBody.rotation = Quaternion.Euler(0, _moveDirection.x < 0 ? 180 : 0, 0);
-        }
-    }
-
-    // todo => IEnumerator GroundChecker();
-    void GroundCheck() {
-        _isOnGround = Physics2D.RaycastNonAlloc(transform.position, -transform.up, _hit, _toGroundDistance,
-            _groundMask) > 0;
-
-        if (_isOnGround) {
-            _airJumped = false;
-            _animator.SetBool(_jumping, false);
-            _animator.SetBool(_doubleJumping, false);
-        } 
-        
-        _animator.SetBool(_falling, _rb.linearVelocityY < -0.0001f);
-    }
-    void ForceJump() {
-        if (_playerActions.Jump.WasPerformedThisFrame()) {
-            if (_isOnGround || _airJumped == false) {
-                _rb.AddForceY((_isOnGround ? _jumpHeight : _jumpHeight / 2f) * 100f);
-                _airJumped = !_isOnGround;
-                _animator.SetBool(_doubleJumping, _airJumped);
-                _animator.SetBool(_jumping, true);
-            }
-        }
+    void UpdateAnimator() {
+        _animator.SetBool(_moving, _controller.isMoving);
+        _animator.SetBool(_jumping, _controller.isJumping);
+        _animator.SetBool(_doubleJumping, _controller.isDoubleJumping);
+        _animator.SetBool(_falling, _controller.isFalling);
     }
     IEnumerator HitProcess(Vector2 direction) {
-        _inputEnabled = false;
+        _controller.Disable();
         _animator.SetBool(_hitted, true);
-        _animator.Play("Base Layer.Hit");
-        _rb.linearVelocityX = 0;
-        _rb.linearVelocityY = 0;
-        _rb.AddForce((direction + Vector2.up) * 180f);
+        _animator.Play(_hitAnim);
+        _rb.AddForce((direction + Vector2.up) * _hitForce, ForceMode2D.Impulse);
+        _rb.excludeLayers = _excludeDangerous;
 
         yield return new WaitForSeconds(_hitDuration);
-        
-        while (_isOnGround == false) {
-            yield return null;
-        }
 
+        _rb.excludeLayers = default;
         _animator.SetBool(_hitted, false);
-        _inputEnabled = true;
+        _controller.Enable();
     }
 
-
-    void OnTriggerEnter(Collider other) {
+    void OnTriggerEnter2D(Collider2D other) {
         // Collect some items
+        if (other.gameObject.CompareTag("Heal") && !_health.isMaxHeath) {
+            _health.Increase();
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.CompareTag("Money")) {
+            // Receive 
+        }
     }
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.CompareTag("Trap")) {

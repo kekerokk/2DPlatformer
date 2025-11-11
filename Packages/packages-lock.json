@@ -6,6 +6,13 @@
       "source": "local-tarball",
       "dependencies": {}
     },
+    "com.mackysoft.serializereference-extensions": {
+      "version": "https://github.com/mackysoft/Unity-SerializeReferenceExtensions.git?path=Assets/MackySoft/MackySoft.SerializeReferenceExtensions",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ee6f6ce519e64f3eeb84865e52aaa23785800133"
+    },
     "com.singularitygroup.hotreload": {
       "version": "file:com.singularitygroup.hotreload",
       "depth": 0,
@@ -254,6 +261,13 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "dev.comradevanti.wait-for-anim": {
+      "version": "https://github.com/ComradeVanti/UnityWaitForAnim.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "31ff594b8ae1d0dba8f0a99f4c55c8cd35c89f02"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
