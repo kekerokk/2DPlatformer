@@ -220,7 +220,6 @@ MonoBehaviour:
   _excludeDangerous:
     serializedVersion: 2
     m_Bits: 183
-  _moveDirection: {x: 0, y: 0}
   references:
     version: 2
     RefIds:
@@ -231,7 +230,7 @@ MonoBehaviour:
         _col: {fileID: 5834120757324027103}
         _body: {fileID: 6380252389705811171}
         _maxSpeed: 5
-        _jumpHeight: 7
+        _jumpHeight: 7.5
         _toGroundDistance: 0.05
         _acceleration: 60
         _groundDeceleration: 60
@@ -393,7 +392,7 @@ CapsuleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 375
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2

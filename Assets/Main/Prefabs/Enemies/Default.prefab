@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 453641753266886278}
   - component: {fileID: 1730919209977063004}
   - component: {fileID: 2180784193347510467}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 3458962901874121508}
   - component: {fileID: 3430150143168170586}
   - component: {fileID: 2079881040953061197}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Default
   m_TagString: Trap
   m_Icon: {fileID: 0}
