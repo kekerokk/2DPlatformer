@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
     [SerializeField] Rigidbody2D _rb;
-    [SerializeField] CapsuleCollider2D _col;
     [SerializeField] Transform _playerBody;
-    [SerializeField] Animator _animator;
+    [SerializeField] PlayerAnimator _animator;
+    [SerializeField] PlayerController _controller;
+    [SerializeField] PlayerAudio _audio;
     [SerializeField] Health _health;
     [SerializeField] Sword _sword;
-    [SerializeReference, SubclassSelector] IController _controller;
     Storage _storage;
     public Health health => _health;
     
+    [Header("Hit Params")]
     [SerializeField] float _hitForce = 4f;
     [SerializeField] float _hitDuration = 0.5f;
     [SerializeField] LayerMask _excludeDangerous;
@@ -20,16 +21,11 @@ public class Player : MonoBehaviour {
     IInput _input;
 
     public event Action OnDied = delegate { };
-    
-    static readonly int _moving = Animator.StringToHash("Moving");
-    static readonly int _jumping = Animator.StringToHash("Jumping");
-    static readonly int _doubleJumping = Animator.StringToHash("DoubleJumping");
-    static readonly int _falling = Animator.StringToHash("Falling");
-    static readonly string _hitAnim = "Base Layer.Hit";
 
     public void Initialize(Storage storage, IInput input) {
         _storage = storage;
         _input = input;
+        _audio.Initialize(_health);
         
         _input.OnAttack += Attack;
         _health.Reset();
@@ -46,19 +42,11 @@ public class Player : MonoBehaviour {
         MoveInputData input = new(_input.move, _input.isJump);
         _controller.UpdateInput(ref input);
     }
-    void FixedUpdate() {
-        _controller.Update();
-        UpdateAnimator();
-    }
-    void UpdateAnimator() {
-        _animator.SetBool(_moving, _controller.isMoving);
-        _animator.SetBool(_jumping, _controller.isJumping);
-        _animator.SetBool(_doubleJumping, _controller.isDoubleJumping);
-        _animator.SetBool(_falling, _controller.isFalling);
-    }
+    void FixedUpdate() => _controller.Updt();
     IEnumerator HitProcess(Vector2 direction) {
         _controller.Disable();
-        _animator.Play(_hitAnim);
+        _animator.PlayHitAnimation();
+        
         _rb.AddForce((direction + Vector2.up) * _hitForce, ForceMode2D.Impulse);
         _rb.excludeLayers = _excludeDangerous;
 
@@ -68,14 +56,12 @@ public class Player : MonoBehaviour {
         _rb.excludeLayers = default;
         _controller.Enable();
     }
-    void Die() {
-        OnDied.Invoke();
-    }
+    void Die() => OnDied.Invoke();
 
     public void Restore() {
         _health.Reset();
         _controller.Reset();
-        _animator.Play("Base Layer.Idle");
+        _animator.PlayIdleAnimation();
     }
 
     void OnTriggerEnter2D(Collider2D other) {

@@ -163,4 +163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01dbb1478fc74254a346e22e6d4a49cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Collectable
-  _animator: {fileID: 0}
+  _sprite: {fileID: 5343710659101783499}
+  _source: {fileID: 0}
+  _pickUpSound: {fileID: 0}
+  _animator: {fileID: 3202827734072481257}
+  _col: {fileID: 6479394847368830227}

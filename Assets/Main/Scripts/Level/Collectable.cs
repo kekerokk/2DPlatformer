@@ -1,8 +1,11 @@
 ﻿using System.Collections;
-using Dev.ComradeVanti.WaitForAnim;
+using PrimeTween;
 using UnityEngine;
 
 public class Collectable : MonoBehaviour {
+    [SerializeField] SpriteRenderer _sprite;
+    [SerializeField] AudioSource _source;
+    [SerializeField] AudioClip _pickUpSound;
     [SerializeField] Animator _animator;
     [SerializeField] Collider2D _col;
 
@@ -18,8 +21,11 @@ public class Collectable : MonoBehaviour {
     IEnumerator InteractProcess() {
         _animator.Play("Base Layer.Interaction");
         _col.enabled = false;
+        _source?.PlayOneShot(_pickUpSound);
+        Tween.PositionY(transform, transform.position.y + 1f, 0.5f);
+        yield return Tween.Alpha(_sprite, 0, 0.5f);
         
-        yield return new WaitForAnimationToFinish(_animator, "Interaction");
+        // yield return new WaitForAnimationToFinish(_animator, "Interaction");
 
         Destroy(gameObject);
     }

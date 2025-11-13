@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, IPatroller {
     [SerializeField] Rigidbody2D _rb;
-    [SerializeReference, SubclassSelector] IController _controller;
+    [SerializeField] EnemyController _controller;
     [SerializeField] Health _health;
     [SerializeField] float _hitForce = 4f;
     [SerializeField] float _hitDuration = 0.5f;
@@ -35,10 +35,8 @@ public class Enemy : MonoBehaviour, IPatroller {
         MoveInputData input = new((_target - transform.position).normalized, false);
         _controller.UpdateInput(ref input);
     }
-    void FixedUpdate() {
-        _controller.Update();
-    }
-    
+    void FixedUpdate() => _controller.Update();
+
     IEnumerator HitProcess(Vector2 direction) {
         _controller.Disable();
         _rb.AddForce((direction + Vector2.up) * _hitForce, ForceMode2D.Impulse);

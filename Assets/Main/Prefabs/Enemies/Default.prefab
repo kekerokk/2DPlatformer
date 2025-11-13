@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 3458962901874121508}
   - component: {fileID: 3430150143168170586}
   - component: {fileID: 2079881040953061197}
+  - component: {fileID: 3634454111280656358}
   m_Layer: 7
   m_Name: Default
   m_TagString: Trap
@@ -175,42 +176,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   _rb: {fileID: 2079881040953061197}
-  _controller:
-    rid: 1393537770433806638
+  _controller: {fileID: 3634454111280656358}
   _health:
     <maxHealth>k__BackingField: 3
     <current>k__BackingField: 0
   _hitForce: 4
   _hitDuration: 0.5
   _target: {x: 0, y: 0, z: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1393537770433806638
-      type: {class: Controller, ns: , asm: Assembly-CSharp}
-      data:
-        _rb: {fileID: 2079881040953061197}
-        _col: {fileID: 2180784193347510467}
-        _body: {fileID: 3458962901874121508}
-        _maxSpeed: 2
-        _jumpHeight: 3
-        _toGroundDistance: 0.05
-        _acceleration: 60
-        _groundDeceleration: 60
-        _airDeceleration: 40
-        _maxFallSpeed: 15
-        _inAirGravity: 20
-        _groundMask:
-          serializedVersion: 2
-          m_Bits: 64
-        _active: 1
-        _isOnGround: 1
-        _airJumped: 0
-        _jumpPerformed: 0
-        _sideHitted: 0
-        _ceilHitted: 0
-        _frameVelocity: {x: 0, y: 0}
-        _move: {x: 0, y: 0}
 --- !u!50 &2079881040953061197
 Rigidbody2D:
   serializedVersion: 5
@@ -238,3 +210,32 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &3634454111280656358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490396781993260807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 368563cb262e45f59a9e2f39a3438846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  _rb: {fileID: 2079881040953061197}
+  _col: {fileID: 2180784193347510467}
+  _body: {fileID: 3458962901874121508}
+  _maxSpeed: 2
+  _toGroundDistance: 0.05
+  _acceleration: 60
+  _groundDeceleration: 60
+  _airDeceleration: 40
+  _maxFallSpeed: 15
+  _inAirGravity: 15
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _active: 1
+  _isOnGround: 1
+  _frameVelocity: {x: 0, y: 0}
+  _move: {x: 0, y: 0}
