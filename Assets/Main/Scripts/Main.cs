@@ -34,6 +34,7 @@ public class Main : MonoBehaviour {
     void Initialize() {
         _storage.Load();
 
+        _camera.Initialize(_player.transform);
         _player.Initialize(_storage, _input);
         _gameUI.Initialize(_input, _player.health, _storage);
         
@@ -48,16 +49,19 @@ public class Main : MonoBehaviour {
         // next lvl
         lvlId = ++lvlId >= _levelsPrefabs.Count ? 0 : lvlId;
         BeginLevel(lvlId);
+        _camera.ResetPosition();
     }
     void BeginLevel(int id) {
         _currentLevel = Instantiate(_levelsPrefabs[id]);
         _currentLevel.levelCompleter.OnComplete += StartNextLevel;
         _player.transform.position = _currentLevel.spawnPosition.position;
+        _camera.SetWorldSize(_currentLevel.GetBounds());
     }
     void RestartLevel() {
         _storage.Load();
         _currentLevel.levelCompleter.OnComplete -= StartNextLevel;
         Destroy(_currentLevel.gameObject);
+        
         BeginLevel(lvlId); // or _currentLevel.Restart()
         _player.Restore();
     }

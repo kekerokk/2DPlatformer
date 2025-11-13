@@ -8,6 +8,12 @@ public class Level : MonoBehaviour {
     [field: SerializeField] public Transform spawnPosition { get; private set; }
     
     void Awake() {
-        Debug.Log($"MapSize: {_tilemap.size}");
+        _tilemap.CompressBounds();
+        Debug.Log($"TilemapSize: {_tilemap.size}, TileCenter: {_tilemap.cellBounds.center}");
+    }
+
+    public BoundsInt GetBounds() {
+        _tilemap.CompressBounds();
+        return _tilemap.cellBounds;
     }
 }

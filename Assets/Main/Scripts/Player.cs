@@ -75,6 +75,7 @@ public class Player : MonoBehaviour {
     public void Restore() {
         _health.Reset();
         _controller.Reset();
+        _animator.Play("Base Layer.Idle");
     }
 
     void OnTriggerEnter2D(Collider2D other) {

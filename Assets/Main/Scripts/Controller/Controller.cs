@@ -61,12 +61,13 @@ public class Controller : IController {
 
         var groundHit = Physics2D.CapsuleCast(_col.bounds.center, _col.size * _col.transform.lossyScale, _col.direction, 0,
             Vector2.down, _toGroundDistance, _groundMask);
-        _ceilHitted = Physics2D.CapsuleCast(_col.bounds.center, _col.size * _col.transform.lossyScale, _col.direction, 0,
+        RaycastHit2D _ceilHit = Physics2D.CapsuleCast(_col.bounds.center, _col.size * _col.transform.lossyScale, _col.direction, 0,
             Vector2.up, _toGroundDistance, _groundMask);  
         var sideHit = Physics2D.CapsuleCast(_col.bounds.center, _col.size * _col.transform.lossyScale, _col.direction, 0,
             _body.right, _toGroundDistance, _groundMask);
 
-        if (_ceilHitted) _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
+        if (_ceilHit != default && Vector2.Angle(_body.up,(new Vector3(_ceilHit.point.x, _ceilHit.point.y)- _body.position)) < 45) 
+            _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
         if (sideHit != default && Vector2.Angle(_body.right,(new Vector3(sideHit.point.x, sideHit.point.y)- _body.position)) < 30) {
             _frameVelocity.x = 0;
             _sideHitted = true;
